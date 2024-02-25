@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+            color: #495057;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+            color: #007bff;
+        }
+
+        .navbar {
+            background-color: #fff;
+            overflow: hidden;
+            padding: 15px;
+            color: black;
+            display: flex;
+            justify-content: space-between;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-size: 20px;
+            color: black;
+        }
+
+        .nav-links {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        .nav-links li {
+            margin-right: 20px;
+        }
+
+        .nav-links a {
+            color: black;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+
+        main {
+            margin-top: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        table {
+            width: 100%;
+            max-width: 1400px;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        footer {
+            margin: auto;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .liked {
+            color: red;
+        }
+
+        .ended {
+            color: green;
+        }
+
+        .likeButton {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="logo">ESports</div>
+        <ul class="nav-links">
+            <li><a href="/">Home</a></li>
+            <li><a href="/signout">SignOut</a></li>
+            <li><a href="/login"></a></li>
+        </ul>
+    </nav>
+    <main>
+        <h1>Student Dashboard</h1>
+        <table>
+            <tr>
+                <th>Tournament Name</th>
+                <th>Game</th>
+                <th>Date</th>
+                <th>Ending Time</th>
+                <th>Actions</th>
+            </tr>
+            <% for (var i=0; i < allgames.length; i++) { %>
+            <tr>
+                <td><%= allgames[i].title %></td>
+                <td><%= allgames[i].subtitle %></td>
+                <td><%= allgames[i].date %></td>
+                <td id="endingTime<%= i %>" data-starttime="<%= allgames[i].date %>"></td>
+                <td>
+                        <button class="likeButton" data-gameid="<%= allgames[i].id %>">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        <form method="post" action="/register">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <button class="registerButton" style="margin-left: 10px;" data-gameid="<%= allgames[i].id %>">
+                                Register Now
+                            </button>
+                        </form>
+                </td>
+            </tr>
+            <% } %>
+        </table>
+    </main>
+
+    <script>
+        function handleLikeButtonClick(button) {
+            button.classList.toggle('liked');
+            const gameId = button.getAttribute('data-gameid');
+            localStorage.setItem(`likeStatus_${gameId}`, button.classList.contains('liked'));
+        }
+        const likeButtons = document.querySelectorAll('.likeButton');
+        likeButtons.forEach(button => {
+            const gameId = button.getAttribute('data-gameid');
+            const isLiked = localStorage.getItem(`likeStatus_${gameId}`);
+            if (isLiked === 'true') {
+                button.classList.add('liked');
+            }
+            button.addEventListener('click', function () {
+                handleLikeButtonClick(this);
+            });
+        });
+
+        function formatDateTime(dateTimeStr) {
+            const dateTime = new Date(dateTimeStr);
+            return dateTime.toLocaleDateString() + ' ' + dateTime.toLocaleTimeString();
+        }
+
+        function updateTime() {
+            const currentDate = new Date();
+            const endingTimes = document.querySelectorAll('[id^="endingTime"]');
+            endingTimes.forEach((endTime, index) => {
+                const startTime = new Date(endTime.dataset.starttime);
+                const remainingTime = startTime - currentDate;
+                if (remainingTime <= 0) {
+                    endTime.textContent = "Event Started";
+                    endTime.classList.add('ended');
+                } else {
+                    const totalSeconds = Math.floor(remainingTime / 1000);
+                    const hours = Math.floor(totalSeconds / 3600);
+                    const minutes = Math.floor((totalSeconds % 3600) / 60);
+                    const seconds = totalSeconds % 60;
+                    endTime.textContent = hours + "h " + minutes + "m " + seconds + "s";
+                }
+            });
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+    </script>
+
+</body>
+</html>

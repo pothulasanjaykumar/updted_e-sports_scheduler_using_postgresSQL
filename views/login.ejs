@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>">
+    <link rel="stylesheet" href="./signup.css">
+    <title><%= title %></title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(to right, #4568DC, #B06AB3);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            animation: fadeInDown 1s ease forwards;
+        }
+
+        @keyframes fadeInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        label {
+            margin: 15px 0;
+            font-weight: bold;
+            color: #333;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: #4caf50;
+        }
+
+        button {
+            background: linear-gradient(to right, #4CAF50, #45a049);
+            color: #fff;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background: linear-gradient(to right, #45a049, #4CAF50);
+        }
+
+        a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+            margin-top: 20px;
+            display: block;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        p.error-message {
+            display: none;
+            color: #ff0000;
+            margin-top: 10px;
+        }
+
+        .show-error {
+            display: block; 
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>ADMIN Login</h1>
+        <form action="/session" method="post">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+            <label for="email">Email:</label>
+            <input type="email" name="email" required placeholder="Enter your email">
+
+            <label for="password">Password:</label>
+            <input type="password" name="password" required placeholder="Enter your password">
+
+            <button type="submit">Login</button>
+        </form>
+        <p class="error-message">Incorrect email or password. Please try again.</p>
+        <a href="#">Forgot password?</a>
+    </div>
+
+    <script>
+        const errorMessage = document.querySelector('.error-message');
+        const error = true;
+        if (error) {
+            errorMessage.classList.add('show-error');
+        }
+    </script>
+</body>
+
+</html>
+
